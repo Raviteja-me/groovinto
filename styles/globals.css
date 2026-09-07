@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --color-bg: #0b0b0f;
+  --color-purple: #7b3ff2;
+  --color-blue: #2d9cff;
+  --color-pink: #ff4fd8;
+  --color-neutral: #8a8a8a;
+  --color-light: #f5f5f5;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: radial-gradient(circle at 20% 20%, rgba(123, 63, 242, 0.08), transparent 25%),
+    radial-gradient(circle at 70% 10%, rgba(45, 156, 255, 0.08), transparent 25%),
+    radial-gradient(circle at 40% 80%, rgba(255, 79, 216, 0.06), transparent 35%),
+    var(--color-bg);
+  color: var(--color-light);
+  font-family: 'Space Grotesk', 'Syne', 'Satoshi', 'Manrope', system-ui, -apple-system, sans-serif;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.glow-border {
+  position: relative;
+}
+
+.glow-border::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(123, 63, 242, 0.65), rgba(45, 156, 255, 0.65), rgba(255, 79, 216, 0.65));
+  opacity: 0.7;
+  filter: blur(16px);
+}
+
+.button-glow {
+  box-shadow: 0 0 20px rgba(123, 63, 242, 0.5), 0 0 40px rgba(45, 156, 255, 0.3);
+}
+
+.cursor-dot,
+.cursor-outline {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  z-index: 50;
+}
+
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  background: #fff;
+}
+
+.cursor-outline {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  transition: transform 120ms ease, opacity 180ms ease;
+}
+
+.section-padding {
+  @apply px-6 sm:px-10 lg:px-16 py-16 lg:py-24;
+}
+
+.text-gradient {
+  background: linear-gradient(120deg, #7b3ff2, #2d9cff, #ff4fd8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
