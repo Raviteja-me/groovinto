@@ -8,6 +8,9 @@ import FinalCTA from '../components/FinalCTA';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
 import Cursor from '../components/Cursor';
 import ClientLogos from '../components/ClientLogos';
+import dynamic from 'next/dynamic';
+
+const CheckoutButton = dynamic(() => import('../components/CheckoutButton'), { ssr: false });
 
 export default function HomePage() {
   return (
@@ -21,6 +24,9 @@ export default function HomePage() {
         <ClientLogos />
         <Testimonials />
         <FinalCTA />
+        <div className="flex justify-center mt-6">
+          <CheckoutButton />
+        </div>
       </main>
       <Footer />
       <FloatingWhatsApp />

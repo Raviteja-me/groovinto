@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { navLinks } from '../lib/data';
 import { useState, useEffect } from 'react';
+import AdminLoginOverlay from './AdminLoginOverlay';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -17,6 +18,18 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const [adminOpen, setAdminOpen] = useState(false);
+  const [clicks, setClicks] = useState(0);
+
+  const handleLogoClick = () => {
+    setClicks((c) => c + 1);
+    setTimeout(() => setClicks(0), 800);
+    if (clicks + 1 >= 3) {
+      setAdminOpen(true);
+      setClicks(0);
+    }
+  };
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all ${
@@ -24,7 +37,7 @@ export default function Navbar() {
       }`}
     >
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center" aria-label="Groovinto home">
+        <Link href="/" className="flex items-center" aria-label="Groovinto home" onClick={(e) => { e.preventDefault(); handleLogoClick(); window.location.href = '/'; }}>
           <div className="relative h-32 w-80 drop-shadow-[0_0_30px_rgba(255,106,0,0.65)] flex-shrink-0">
             <Image
               src="/logo/groovinto.png"
@@ -56,6 +69,7 @@ export default function Navbar() {
           </Link>
         </div>
       </nav>
+      <AdminLoginOverlay open={adminOpen} onClose={() => setAdminOpen(false)} />
     </header>
   );
 }

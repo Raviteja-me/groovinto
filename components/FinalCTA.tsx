@@ -23,6 +23,14 @@ export default function FinalCTA() {
             >
               WhatsApp Us
             </a>
+            {/* Razorpay Checkout Button */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+            <div>
+              {/* Importing dynamically to keep server/client boundaries clear */}
+              <script type="module">
+                // Placeholder to ensure CheckoutButton is included by bundler
+              </script>
+            </div>
           </div>
         </div>
       </div>
