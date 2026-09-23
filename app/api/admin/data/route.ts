@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { isAdminRequest } from '../../../../lib/admin-auth';
-import { readAll } from '../../../../lib/store';
+import { readAll, storageMode } from '../../../../lib/store';
 import { getRazorpayKeys, listPayments } from '../../../../lib/razorpay';
 import { COURSE } from '../../../../lib/course';
 
@@ -64,6 +64,7 @@ export async function GET() {
     subscribers,
     failures,
     razorpay: { connected: razorpayOk, error: razorpayError, mode: (getRazorpayKeys().keyId || '').startsWith('rzp_live') ? 'live' : 'test' },
+    storage: storageMode,
     course: { name: COURSE.name, price: COURSE.price }
   });
 }

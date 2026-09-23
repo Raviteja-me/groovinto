@@ -24,9 +24,10 @@ export default function Hero() {
       <div className="glow-orb -left-40 top-20 h-[520px] w-[520px] bg-brand/25" />
       <div className="glow-orb right-0 top-1/3 h-[420px] w-[420px] bg-mint/10" />
 
-      <motion.div style={{ y: sceneY, scale: sceneScale }} className="pointer-events-none absolute inset-0 lg:left-[42%]">
-        <SceneLoader variant="hero" className="h-full w-full opacity-60 lg:opacity-100" />
+      <motion.div style={{ y: sceneY, scale: sceneScale }} className="pointer-events-none absolute inset-x-0 bottom-0 top-[28%]">
+        <SceneLoader variant="wave" className="h-full w-full" />
       </motion.div>
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink via-ink/60 to-transparent" />
 
       <motion.div style={{ y, opacity }} className="container-x relative z-10">
         <div className="max-w-3xl">
@@ -49,15 +50,15 @@ export default function Hero() {
             as="h1"
             animateOnMount
             delay={0.35}
-            text="We don't just market brands. We build *digital movements.*"
-            className="mt-8 text-display-xl font-extrabold text-cream"
+            text="We build *digital movements.*"
+            className="mt-8 max-w-3xl text-display-xl font-extrabold text-cream"
           />
 
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: EASE, delay: 1 }}
-            className="mt-8 max-w-xl text-lg leading-relaxed text-muted sm:text-xl"
+            className="mt-6 max-w-md text-lg leading-relaxed text-muted"
           >
             AI content, branding and growth for bold brands.
           </motion.p>
@@ -66,7 +67,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: EASE, delay: 1.15 }}
-            className="mt-10 flex flex-wrap items-center gap-4"
+            className="mt-9 flex flex-wrap items-center gap-4"
           >
             <Magnetic>
               <Link href="/contact" className="btn-primary">

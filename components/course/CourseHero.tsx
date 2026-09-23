@@ -34,7 +34,7 @@ export default function CourseHero() {
             <span className="pill">{COURSE.seats} seats only</span>
           </motion.div>
 
-          <TextReveal as="h1" animateOnMount delay={0.3} text={`${COURSE.name}: make *AI videos* people actually watch.`} className="mt-8 text-display-lg font-extrabold text-cream" accentClassName="mint-text" />
+          <TextReveal as="h1" animateOnMount delay={0.3} text="Make *AI videos* people watch." className="mt-8 text-display-lg font-extrabold text-cream" accentClassName="mint-text" />
 
           <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE, delay: 0.9 }} className="mt-6 max-w-xl text-lg text-muted">
             {COURSE.subheadline}

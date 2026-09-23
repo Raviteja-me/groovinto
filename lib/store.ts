@@ -1,71 +1,88 @@
-// File-based storage used until a real database is attached.
-// Records are JSON arrays in ./data (or DATA_DIR). If that folder is read-only
-// (for example on some serverless hosts) it falls back to the OS temp folder.
-// Paid registrations are ALSO always readable from Razorpay itself, so no payment is lost.
+// Storage used until a real database is attached. No external service needed.
+//  - On Netlify: Netlify Blobs (built in, zero config, persists across deploys).
+//  - Locally:    JSON files in ./data (or DATA_DIR).
+// Paid registrations are ALSO read straight from Razorpay in the admin panel,
+// so a payment is never lost even if storage fails.
 import fs from 'fs/promises';
-import os from 'os';
 import path from 'path';
 
-const PRIMARY = process.env.DATA_DIR || path.join(process.cwd(), 'data');
-const FALLBACK = path.join(os.tmpdir(), 'groovinto-data');
-
 export type Collection = 'registrations' | 'enquiries' | 'subscribers' | 'payment_failures';
+type Row = Record<string, any> & { id: string };
 
-async function readFrom(dir: string, name: Collection): Promise<any[]> {
+const onNetlify = Boolean(process.env.NETLIFY_BLOBS_CONTEXT || process.env.NETLIFY || process.env.NETLIFY_LOCAL);
+
+async function blobStore() {
+  const { getStore } = await import('@netlify/blobs');
+  return getStore({ name: 'groovinto', consistency: 'strong' });
+}
+
+const safeKey = (id: string) => id.replace(/[^a-zA-Z0-9_.@-]/g, '_');
+
+/* ---------- Netlify Blobs: one blob per record, so concurrent writes never collide ---------- */
+async function blobReadAll(name: Collection): Promise<Row[]> {
+  const store = await blobStore();
+  const { blobs } = await store.list({ prefix: `${name}/` });
+  const rows = await Promise.all(blobs.map((b) => store.get(b.key, { type: 'json' }) as Promise<Row | null>));
+  return rows.filter(Boolean) as Row[];
+}
+
+async function blobInsert(name: Collection, row: Row) {
+  const store = await blobStore();
+  const key = `${name}/${safeKey(row.id)}`;
+  if (await store.get(key)) return false;
+  await store.setJSON(key, row);
+  return true;
+}
+
+/* ---------- Local JSON files ---------- */
+const DIR = process.env.DATA_DIR || path.join(process.cwd(), 'data');
+let queue: Promise<unknown> = Promise.resolve();
+
+async function fileRead(name: Collection): Promise<Row[]> {
   try {
-    const raw = await fs.readFile(path.join(dir, `${name}.json`), 'utf8');
-    const data = JSON.parse(raw);
+    const data = JSON.parse(await fs.readFile(path.join(DIR, `${name}.json`), 'utf8'));
     return Array.isArray(data) ? data : [];
   } catch {
     return [];
   }
 }
 
-async function writeTo(dir: string, name: Collection, rows: any[]) {
-  await fs.mkdir(dir, { recursive: true });
-  const file = path.join(dir, `${name}.json`);
-  const tmp = `${file}.${process.pid}.${Date.now()}.tmp`;
-  await fs.writeFile(tmp, JSON.stringify(rows, null, 2));
-  await fs.rename(tmp, file);
-}
-
-export async function readAll<T = any>(name: Collection): Promise<T[]> {
-  const [a, b] = await Promise.all([readFrom(PRIMARY, name), readFrom(FALLBACK, name)]);
-  const seen = new Set<string>();
-  const out: any[] = [];
-  for (const row of [...a, ...b]) {
-    if (seen.has(row.id)) continue;
-    seen.add(row.id);
-    out.push(row);
-  }
-  return out.sort((x, y) => String(y.createdAt).localeCompare(String(x.createdAt)));
-}
-
-// Serialise writes inside one process so concurrent requests do not clobber the file.
-let queue: Promise<unknown> = Promise.resolve();
-
-/** Adds a record. If `id` already exists nothing is written. Returns true when created. */
-export function insert(name: Collection, record: Record<string, any> & { id: string }): Promise<boolean> {
+function fileInsert(name: Collection, row: Row) {
   const run = async () => {
-    const row = { createdAt: new Date().toISOString(), ...record };
-    for (const dir of [PRIMARY, FALLBACK]) {
-      try {
-        const rows = await readFrom(dir, name);
-        if (rows.some((r) => r.id === row.id)) return false;
-        rows.push(row);
-        await writeTo(dir, name, rows);
-        return true;
-      } catch (err: any) {
-        console.warn(`[store] could not write ${name} to ${dir}:`, err?.message);
-      }
-    }
-    throw new Error('No writable data directory');
+    const rows = await fileRead(name);
+    if (rows.some((r) => r.id === row.id)) return false;
+    rows.push(row);
+    await fs.mkdir(DIR, { recursive: true });
+    const file = path.join(DIR, `${name}.json`);
+    const tmp = `${file}.${Date.now()}.tmp`;
+    await fs.writeFile(tmp, JSON.stringify(rows, null, 2));
+    await fs.rename(tmp, file);
+    return true;
   };
   const p = queue.then(run, run);
   queue = p.catch(() => undefined);
   return p;
 }
 
+/* ---------- Public API ---------- */
+export async function readAll<T = any>(name: Collection): Promise<T[]> {
+  let rows: Row[] = [];
+  try {
+    rows = onNetlify ? await blobReadAll(name) : await fileRead(name);
+  } catch (err: any) {
+    console.error(`[store] read ${name} failed:`, err?.message);
+  }
+  return rows.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt))) as T[];
+}
+
+/** Adds a record; does nothing if the id already exists. Returns true when created. */
+export async function insert(name: Collection, record: Row): Promise<boolean> {
+  const row = { createdAt: new Date().toISOString(), ...record };
+  return onNetlify ? blobInsert(name, row) : fileInsert(name, row);
+}
+
 export function newId(prefix: string) {
   return `${prefix}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 }
+
+export const storageMode = onNetlify ? 'netlify-blobs' : 'local-file';

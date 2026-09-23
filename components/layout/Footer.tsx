@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { ArrowUpRight, Mail, MessageCircle, Phone } from 'lucide-react';
 import { navLinks, siteConfig, services } from '../../lib/data';
-import { addSubscriber } from '../../lib/firebase';
 import Marquee from '../fx/Marquee';
 
 export default function Footer() {
@@ -21,7 +20,12 @@ export default function Footer() {
     if (!email) return;
     setStatus('sending');
     try {
-      await addSubscriber(email.trim().toLowerCase());
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim().toLowerCase() })
+      });
+      if (!res.ok) throw new Error('failed');
       setStatus('done');
       setEmail('');
     } catch {

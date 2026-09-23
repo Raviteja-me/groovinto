@@ -36,8 +36,8 @@ const config: Config = {
         mono: ['var(--font-mono)', 'ui-monospace', 'monospace']
       },
       fontSize: {
-        'display-xl': ['clamp(3rem, 8vw, 7.5rem)', { lineHeight: '0.95', letterSpacing: '-0.03em' }],
-        'display-lg': ['clamp(2.5rem, 6vw, 5.5rem)', { lineHeight: '1', letterSpacing: '-0.03em' }],
+        'display-xl': ['clamp(2.75rem, 6.5vw, 6rem)', { lineHeight: '0.95', letterSpacing: '-0.03em' }],
+        'display-lg': ['clamp(2.4rem, 5vw, 4.5rem)', { lineHeight: '1', letterSpacing: '-0.03em' }],
         'display-md': ['clamp(2rem, 4.5vw, 4rem)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
         'display-sm': ['clamp(1.6rem, 3vw, 2.5rem)', { lineHeight: '1.1', letterSpacing: '-0.02em' }]
       },
@@ -82,6 +82,10 @@ const config: Config = {
           '0%, 90%, 100%': { transform: 'scaleY(0)' },
           '95%': { transform: 'scaleY(1)' }
         },
+        blinkDouble: {
+          '0%, 16%, 26%, 42%, 100%': { transform: 'scaleY(0)' },
+          '8%, 34%': { transform: 'scaleY(1)' }
+        },
         pulseRing: {
           '0%': { transform: 'scale(0.9)', opacity: '0.8' },
           '100%': { transform: 'scale(1.8)', opacity: '0' }
@@ -95,6 +99,7 @@ const config: Config = {
         float: 'float 6s ease-in-out infinite',
         shimmer: 'shimmer 3s linear infinite',
         blink: 'blink 6s ease-in-out infinite',
+        'blink-double': 'blinkDouble 2.8s ease-in-out 0.2s infinite',
         'pulse-ring': 'pulseRing 2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite'
       },
       transitionTimingFunction: {

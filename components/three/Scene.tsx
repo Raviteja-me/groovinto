@@ -4,10 +4,11 @@ import { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, MeshDistortMaterial, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
+import WaveField from './WaveField';
 
-export type SceneVariant = 'hero' | 'course' | 'orb';
+export type SceneVariant = 'hero' | 'course' | 'orb' | 'wave';
 
-function Blob({ scale = 1.35, color = '#FF6A00', distort = 0.42, speed = 2.2 }) {
+function Blob({ scale = 1.0, color = '#FF6A00', distort = 0.42, speed = 2.2 }) {
   const ref = useRef<THREE.Mesh>(null);
   useFrame((state) => {
     const t = state.clock.elapsedTime;
@@ -129,26 +130,31 @@ export default function Scene({ variant = 'hero', active = true, className }: { 
       className={className}
       dpr={[1, 1.6]}
       gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
-      camera={{ position: [0, 0, 6], fov: 42 }}
+      camera={variant === 'wave' ? { position: [0, 3.2, 9], fov: 50 } : { position: [0, 0, 7], fov: 42 }}
+      onCreated={({ camera }) => variant === 'wave' && camera.lookAt(0, -0.5, 0)}
       frameloop={active ? 'always' : 'never'}
       style={{ background: 'transparent' }}
+      eventSource={typeof document !== 'undefined' ? document.body : undefined}
+      eventPrefix="client"
     >
-      <Lights />
+      {variant === 'wave' && <WaveField />}
+      {variant !== 'wave' && <Lights />}
+      {variant !== 'wave' && (
       <Rig>
         {variant === 'hero' && (
           <>
             <Blob />
-            <Ring radius={2.15} />
-            <Ring radius={2.6} color="#FF9F0D" tilt={-0.6} speed={-0.14} />
+            <Ring radius={1.7} />
+            <Ring radius={2.05} color="#FF9F0D" tilt={-0.6} speed={-0.14} />
             <Shards count={16} />
             <Sparkles count={120} scale={9} size={2.2} speed={0.35} color="#FFC46B" opacity={0.7} />
           </>
         )}
         {variant === 'course' && (
           <>
-            <Blob scale={1.05} distort={0.36} speed={1.8} />
-            <Wireframe radius={1.85} />
-            <Ring radius={2.4} color="#FF9F0D" tilt={1.2} speed={0.18} />
+            <Blob scale={0.85} distort={0.36} speed={1.8} />
+            <Wireframe radius={1.5} />
+            <Ring radius={1.95} color="#FF9F0D" tilt={1.2} speed={0.18} />
             <Sparkles count={80} scale={7} size={2} speed={0.3} color="#4DE0A8" opacity={0.6} />
           </>
         )}
@@ -159,6 +165,7 @@ export default function Scene({ variant = 'hero', active = true, className }: { 
           </>
         )}
       </Rig>
+      )}
     </Canvas>
   );
 }

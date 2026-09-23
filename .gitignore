@@ -12,3 +12,7 @@ out
 .env.production.local
 public/video/
 .codex/
+
+# local registration data (no database yet)
+data/
+.next-verify

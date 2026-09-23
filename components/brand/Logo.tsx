@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { cn } from '../../lib/utils';
 
-function Eye({ irisRef }: { irisRef: (el: HTMLSpanElement | null) => void }) {
+function Eye({ irisRef, lids }: { irisRef: (el: HTMLSpanElement | null) => void; lids: 'idle' | 'double' }) {
   return (
     <span className="relative mx-[0.015em] inline-block h-[0.8em] w-[0.8em] translate-y-[0.02em] overflow-hidden rounded-full bg-[radial-gradient(circle_at_35%_30%,#ffffff,#e9e9e9_55%,#bdbdbd)] shadow-[inset_-0.04em_-0.06em_0.1em_rgba(0,0,0,0.35)]">
       <span
@@ -11,12 +11,20 @@ function Eye({ irisRef }: { irisRef: (el: HTMLSpanElement | null) => void }) {
         className="absolute left-1/2 top-1/2 h-[58%] w-[58%] rounded-full bg-[radial-gradient(circle_at_40%_38%,#2a1200_0_24%,#ff6a00_27%,#ff9f0d_62%,#b84c00_100%)] shadow-[0_0_0.04em_rgba(0,0,0,0.4)] will-change-transform"
         style={{ transform: 'translate(-50%, -50%)' }}
       />
-      <span className="pointer-events-none absolute inset-0 origin-top rounded-full bg-ink animate-blink" />
+      <span className={`pointer-events-none absolute inset-0 origin-top scale-y-0 rounded-full bg-ink ${lids === 'double' ? 'animate-blink-double' : 'animate-blink'}`} />
     </span>
   );
 }
 
-export default function Logo({ className, withTagline = false }: { className?: string; withTagline?: boolean }) {
+export default function Logo({
+  className,
+  withTagline = false,
+  lids = 'idle'
+}: {
+  className?: string;
+  withTagline?: boolean;
+  lids?: 'idle' | 'double';
+}) {
   const irises = useRef<HTMLSpanElement[]>([]);
   const setIris = (el: HTMLSpanElement | null) => {
     if (el && !irises.current.includes(el)) irises.current.push(el);
@@ -61,8 +69,8 @@ export default function Logo({ className, withTagline = false }: { className?: s
     <span className={cn('inline-flex flex-col items-start leading-none', className)}>
       <span className="inline-flex items-center font-display font-extrabold tracking-[-0.03em] text-brand">
         <span>GR</span>
-        <Eye irisRef={setIris} />
-        <Eye irisRef={setIris} />
+        <Eye irisRef={setIris} lids={lids} />
+        <Eye irisRef={setIris} lids={lids} />
         <span>VINTO</span>
       </span>
       {withTagline && <span className="mt-[0.35em] font-display text-[0.28em] font-bold tracking-wide text-mint">Guide. Gain. Grow.</span>}

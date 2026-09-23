@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
-import { addSubmission } from '../../lib/firebase';
 
 const BUDGETS = ['Under ₹1L', '₹1L - ₹3L', '₹3L - ₹10L', '₹10L+', 'Not sure yet'];
 
@@ -18,14 +17,19 @@ export default function ContactForm() {
     const form = e.currentTarget;
     const fd = new FormData(form);
     try {
-      await addSubmission({
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
         name: String(fd.get('name') || ''),
         email: String(fd.get('email') || ''),
         phone: String(fd.get('phone') || ''),
         company: String(fd.get('company') || ''),
         budget: String(fd.get('budget') || ''),
         message: String(fd.get('message') || '')
+        })
       });
+      if (!res.ok) throw new Error('failed');
       setStatus('done');
       form.reset();
     } catch (err) {

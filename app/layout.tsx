@@ -5,7 +5,8 @@ import { siteConfig } from '../lib/data';
 import SmoothScroll from '../components/fx/SmoothScroll';
 import Cursor from '../components/fx/Cursor';
 import ScrollProgress from '../components/fx/ScrollProgress';
-import Preloader from '../components/fx/Preloader';
+import Splash from '../components/fx/Splash';
+import PageTransition from '../components/fx/PageTransition';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import FloatingWhatsApp from '../components/layout/FloatingWhatsApp';
@@ -66,7 +67,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
       <body className="bg-ink text-cream antialiased">
         <SmoothScroll>
-          <Preloader />
+          <Splash />
+          <PageTransition />
           <ScrollProgress />
           <Navbar />
           {children}
