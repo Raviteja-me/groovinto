@@ -30,7 +30,7 @@ export default function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink via-ink/60 to-transparent" />
 
       <motion.div style={{ y, opacity }} className="container-x relative z-10">
-        <div className="max-w-3xl">
+        <div className="max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -51,7 +51,7 @@ export default function Hero() {
             animateOnMount
             delay={0.35}
             text={"We build\n*digital*\n*movements.*"}
-            className="mt-8 text-[clamp(3.5rem,10vw,10rem)] font-extrabold leading-[0.92] tracking-[-0.035em] text-cream"
+            className="mt-8 text-[clamp(3.25rem,8.5vw,8.5rem)] font-extrabold leading-[0.92] tracking-[-0.035em] text-cream"
           />
 
           <motion.p
