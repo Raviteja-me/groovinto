@@ -1,14 +1,11 @@
 import { MetadataRoute } from 'next';
-import { navLinks } from '../lib/data';
+import { navLinks, siteConfig } from '../lib/data';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://www.groovinto.com';
-  const staticRoutes = navLinks.map((link) => ({
-    url: `${baseUrl}${link.href}`,
+  return navLinks.map((link) => ({
+    url: `${siteConfig.url}${link.href}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
-    priority: link.href === '/' ? 1 : 0.8
+    priority: link.href === '/' ? 1 : link.href === '/register' ? 0.9 : 0.8
   }));
-
-  return staticRoutes;
 }

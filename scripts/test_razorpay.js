@@ -1,42 +1,62 @@
+/**
+ * Smoke test for the payment API without a browser.
+ *   1. npm run dev
+ *   2. node scripts/test_razorpay.js
+ * Creates a real (test-mode) order, then checks that signature verification
+ * accepts a correctly signed payload and rejects a tampered one.
+ */
+const crypto = require('crypto');
 const fs = require('fs');
 
+const BASE = process.env.BASE_URL || 'http://localhost:3000';
+
+function readSecret() {
+  if (process.env.RAZORPAY_KEY_SECRET) return process.env.RAZORPAY_KEY_SECRET;
+  for (const file of ['.env.local', '.env']) {
+    try {
+      const m = fs.readFileSync(file, 'utf8').match(/^RAZORPAY_KEY_SECRET=(.*)$/m);
+      if (m && m[1].trim()) return m[1].trim();
+    } catch {}
+  }
+  return '';
+}
+
 (async () => {
-  try {
-    const env = fs.readFileSync('.env', 'utf8');
-    const secretMatch = env.match(/RAZORPAY_KEY_SECRET=(.*)/);
-    const secret = (secretMatch && secretMatch[1]) || process.env.RAZORPAY_KEY_SECRET || '';
-
-    const fetch = globalThis.fetch || (await import('node-fetch')).default;
-
-    console.log('Creating order...');
-    const res = await fetch('http://localhost:3000/api/create-order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: 1000 }),
-    });
-    const data = await res.json();
-    console.log('create-order response:', data);
-    if (!data.order_id) {
-      console.error('No order_id returned');
-      process.exit(1);
-    }
-
-    const order_id = data.order_id;
-    const payment_id = 'pay_test_123456';
-
-    const crypto = require('crypto');
-    const signature = crypto.createHmac('sha256', secret).update(`${order_id}|${payment_id}`).digest('hex');
-
-    console.log('Verifying payment with fake payment id and generated signature...');
-    const verifyRes = await fetch('http://localhost:3000/api/verify-payment', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ razorpay_order_id: order_id, razorpay_payment_id: payment_id, razorpay_signature: signature }),
-    });
-    const verifyData = await verifyRes.json();
-    console.log('verify-payment response:', verifyData);
-  } catch (err) {
-    console.error('Test script error:', err);
+  const secret = readSecret();
+  if (!secret) {
+    console.error('RAZORPAY_KEY_SECRET not found in .env / .env.local');
     process.exit(1);
   }
-})();
+
+  console.log('1) create-order');
+  const res = await fetch(`${BASE}/api/create-order`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Test User', email: 'test@example.com', phone: '9999999999', city: 'Bengaluru', goal: 'Testing' })
+  });
+  const data = await res.json();
+  console.log('   ->', res.status, data);
+  if (!data.orderId) process.exit(1);
+
+  const paymentId = 'pay_test_' + Date.now();
+  const sig = crypto.createHmac('sha256', secret).update(`${data.orderId}|${paymentId}`).digest('hex');
+
+  console.log('2) verify-payment with a valid signature (payment lookup will fail because the payment id is fake, which is expected)');
+  const ok = await fetch(`${BASE}/api/verify-payment`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ razorpay_order_id: data.orderId, razorpay_payment_id: paymentId, razorpay_signature: sig, name: 'Test User', email: 'test@example.com', phone: '9999999999' })
+  });
+  console.log('   ->', ok.status, await ok.json());
+
+  console.log('3) verify-payment with a tampered signature (must be rejected)');
+  const bad = await fetch(`${BASE}/api/verify-payment`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ razorpay_order_id: data.orderId, razorpay_payment_id: paymentId, razorpay_signature: 'deadbeef' })
+  });
+  console.log('   ->', bad.status, await bad.json());
+})().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

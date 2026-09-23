@@ -1,32 +1,104 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  content: [
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './lib/**/*.{js,ts,jsx,tsx}',
-    './blog/**/*.{md,mdx}'
-  ],
+  content: ['./app/**/*.{js,ts,jsx,tsx,mdx}', './components/**/*.{js,ts,jsx,tsx,mdx}', './lib/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        midnight: '#0B0B0F',
-        purple: '#FF6A00',
-        neon: '#00C27A',
-        accent: '#FF9F0D',
-        neutral: '#8A8A8A',
-        light: '#F5F5F5'
+        ink: {
+          DEFAULT: '#07070A',
+          2: '#0E0E13',
+          3: '#15151C',
+          4: '#1D1D26'
+        },
+        brand: {
+          DEFAULT: '#FF6A00',
+          300: '#FFA366',
+          400: '#FF8A33',
+          500: '#FF6A00',
+          600: '#E55F00',
+          700: '#B84C00'
+        },
+        amber: '#FF9F0D',
+        mint: {
+          DEFAULT: '#00C27A',
+          300: '#4DE0A8',
+          600: '#009C62'
+        },
+        cream: '#F4F1EA',
+        muted: '#9A9AA3',
+        line: 'rgba(255,255,255,0.08)'
+      },
+      fontFamily: {
+        display: ['var(--font-display)', 'system-ui', 'sans-serif'],
+        body: ['var(--font-body)', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-mono)', 'ui-monospace', 'monospace']
+      },
+      fontSize: {
+        'display-xl': ['clamp(3rem, 8vw, 7.5rem)', { lineHeight: '0.95', letterSpacing: '-0.03em' }],
+        'display-lg': ['clamp(2.5rem, 6vw, 5.5rem)', { lineHeight: '1', letterSpacing: '-0.03em' }],
+        'display-md': ['clamp(2rem, 4.5vw, 4rem)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
+        'display-sm': ['clamp(1.6rem, 3vw, 2.5rem)', { lineHeight: '1.1', letterSpacing: '-0.02em' }]
       },
       backgroundImage: {
-        'gradient-brand': 'linear-gradient(135deg, #FF6A00 0%, #FF9F0D 45%, #00C27A 100%)',
-        'grid-glow':
-          'radial-gradient(circle at 20% 20%, rgba(255,106,0,0.18), transparent 25%), radial-gradient(circle at 80% 0%, rgba(255,159,13,0.2), transparent 30%), radial-gradient(circle at 60% 70%, rgba(0,194,122,0.18), transparent 35%)'
+        'gradient-brand': 'linear-gradient(135deg, #FF6A00 0%, #FF9F0D 55%, #FFC46B 100%)',
+        'gradient-mint': 'linear-gradient(135deg, #00C27A 0%, #4DE0A8 100%)',
+        'gradient-ink': 'linear-gradient(180deg, rgba(14,14,19,0) 0%, #07070A 100%)'
       },
       boxShadow: {
-        glass: '0 10px 60px rgba(0,0,0,0.55)',
-        glow: '0 0 30px rgba(255,106,0,0.5)',
-        'card-soft': '0 20px 60px rgba(11,11,15,0.55)'
+        glow: '0 0 40px rgba(255,106,0,0.45), 0 0 120px rgba(255,106,0,0.15)',
+        'glow-sm': '0 0 24px rgba(255,106,0,0.35)',
+        'glow-mint': '0 0 40px rgba(0,194,122,0.35)',
+        card: '0 30px 80px -30px rgba(0,0,0,0.8)',
+        inset: 'inset 0 1px 0 rgba(255,255,255,0.06)'
+      },
+      borderRadius: {
+        '4xl': '2rem',
+        '5xl': '2.5rem'
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' }
+        },
+        'marquee-reverse': {
+          '0%': { transform: 'translateX(-50%)' },
+          '100%': { transform: 'translateX(0)' }
+        },
+        'spin-slow': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' }
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-14px)' }
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' }
+        },
+        blink: {
+          '0%, 90%, 100%': { transform: 'scaleY(0)' },
+          '95%': { transform: 'scaleY(1)' }
+        },
+        pulseRing: {
+          '0%': { transform: 'scale(0.9)', opacity: '0.8' },
+          '100%': { transform: 'scale(1.8)', opacity: '0' }
+        }
+      },
+      animation: {
+        marquee: 'marquee 40s linear infinite',
+        'marquee-fast': 'marquee 22s linear infinite',
+        'marquee-reverse': 'marquee-reverse 40s linear infinite',
+        'spin-slow': 'spin-slow 18s linear infinite',
+        float: 'float 6s ease-in-out infinite',
+        shimmer: 'shimmer 3s linear infinite',
+        blink: 'blink 6s ease-in-out infinite',
+        'pulse-ring': 'pulseRing 2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite'
+      },
+      transitionTimingFunction: {
+        out: 'cubic-bezier(0.22, 1, 0.36, 1)'
       }
     }
   },

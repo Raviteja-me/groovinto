@@ -1,29 +1,21 @@
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
-import Portfolio from '../../components/Portfolio';
+import type { Metadata } from 'next';
+import PageHeader from '../../components/layout/PageHeader';
+import WorkGrid from '../../components/work/WorkGrid';
+import Testimonials from '../../components/home/Testimonials';
+import FinalCTA from '../../components/home/FinalCTA';
 
-export const metadata = {
-  title: 'Portfolio | GROOVINTO',
-  description: 'Selected case studies and creative work from GROOVINTO.'
+export const metadata: Metadata = {
+  title: 'Work',
+  description: 'Selected campaigns, brand films, reels and growth programs by GROOVINTO.'
 };
 
 export default function PortfolioPage() {
   return (
-    <div className="bg-midnight text-light">
-      <Navbar />
-      <main className="pt-24">
-        <div className="section-padding">
-          <div className="mx-auto max-w-5xl space-y-3">
-            <p className="text-sm uppercase tracking-[0.25em] text-neutral">Work</p>
-            <h1 className="text-4xl font-semibold">Portfolio</h1>
-            <p className="text-neutral">
-              Campaigns, brand systems, video, and growth programs that moved the needle.
-            </p>
-          </div>
-        </div>
-        <Portfolio />
-      </main>
-      <Footer />
-    </div>
+    <main>
+      <PageHeader eyebrow="Selected work" title="Campaigns, films and systems that *moved the needle.*" description="A few of the stories we have told and the numbers they moved. Click any project for the details." />
+      <WorkGrid />
+      <Testimonials />
+      <FinalCTA />
+    </main>
   );
 }

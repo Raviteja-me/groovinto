@@ -1,14 +1,10 @@
 import { MetadataRoute } from 'next';
+import { siteConfig } from '../lib/data';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://www.groovinto.com';
   return {
-    rules: {
-      userAgent: '*',
-      allow: '/',
-      disallow: ['/api']
-    },
-    sitemap: `${baseUrl}/sitemap.xml`,
-    host: baseUrl
+    rules: { userAgent: '*', allow: '/', disallow: ['/api', '/admin'] },
+    sitemap: `${siteConfig.url}/sitemap.xml`,
+    host: siteConfig.url
   };
 }
