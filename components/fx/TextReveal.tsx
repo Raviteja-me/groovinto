@@ -34,7 +34,7 @@ export default function TextReveal({
   for (const seg of segments) {
     const accent = seg.startsWith('*') && seg.endsWith('*');
     const clean = accent ? seg.slice(1, -1) : seg;
-    for (const w of clean.split(' ')) {
+    for (const w of clean.replace(/\n/g, ' \n ').split(' ')) {
       if (w.length) words.push({ word: w, accent });
     }
   }
@@ -54,15 +54,19 @@ export default function TextReveal({
       variants={container}
       initial="hidden"
       {...(animateOnMount ? { animate: 'show' } : { whileInView: 'show', viewport: { once, amount: 0.4 } })}
-      aria-label={text.replace(/\*/g, '')}
+      aria-label={text.replace(/\*/g, '').replace(/\n/g, ' ')}
     >
-      {words.map((w, i) => (
+      {words.map((w, i) =>
+        w.word === '\n' ? (
+          <span key={i} className="basis-full" aria-hidden />
+        ) : (
         <span key={i} className="mr-[0.24em] inline-block overflow-hidden pb-[0.08em] align-top">
           <motion.span className={cn('inline-block origin-bottom-left', w.accent && accentClassName)} variants={child}>
             {w.word}
           </motion.span>
         </span>
-      ))}
+        )
+      )}
     </Tag>
   );
 }

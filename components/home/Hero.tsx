@@ -50,7 +50,7 @@ export default function Hero() {
             as="h1"
             animateOnMount
             delay={0.35}
-            text="We build *digital movements.*"
+            text={"We build\n*digital*\n*movements.*"}
             className="mt-8 max-w-3xl text-display-xl font-extrabold text-cream"
           />
 
