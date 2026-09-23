@@ -51,7 +51,7 @@ export default function Hero() {
             animateOnMount
             delay={0.35}
             text={"We build\n*digital*\n*movements.*"}
-            className="mt-8 max-w-3xl text-display-xl font-extrabold text-cream"
+            className="mt-8 text-[clamp(3.5rem,10vw,10rem)] font-extrabold leading-[0.92] tracking-[-0.035em] text-cream"
           />
 
           <motion.p
